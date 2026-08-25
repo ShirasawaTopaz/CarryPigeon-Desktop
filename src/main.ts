@@ -184,9 +184,20 @@ if (!isSubWindow && hasTauriRuntime) {
     }
   });
 } else if (!isSubWindow) {
-  // 无 Tauri runtime（纯前端 dev 模式）：恢复已持久化的当前服务器后标记就绪。
-  ensureInitialServerSelection();
-  resolveStartup('ready');
+  // 无 Tauri runtime（浏览器 Vite 联调）：与桌面端一样做会话恢复。
+  // 未配置服务器时进入 /login，避免首屏落在空聊天页。
+  // 不走 startMainWindowRuntimes：其中包含非 safe 的 Tauri event listen，浏览器下会把启动打成 failed。
+  void (async () => {
+    try {
+      setStartupPhaseLabel("startup_phase_connect");
+      ensureInitialServerSelection();
+      await restoreStartupSession(router);
+    } catch (error) {
+      logger.warn("Action: api_browser_startup_session_restore_failed", { error: String(error) });
+    } finally {
+      resolveStartup("ready");
+    }
+  })();
 } else {
   // 子窗口（如截图遮罩、popover 等）：无需主窗口运行时，立即标记就绪以渲染 UI
   resolveStartup('ready');
