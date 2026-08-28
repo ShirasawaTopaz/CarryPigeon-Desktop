@@ -155,7 +155,7 @@ async function handleOpenInChat(): Promise<void> {
             <div class="cp-infoDialog__text">{{ channelAnnouncement || "—" }}</div>
             <div v-if="mayEditChannelMeta" class="cp-infoDialog__actions">
               <button class="cp-infoDialog__btn" type="button" @click="changeAnnouncement">
-                {{ t("edit") }}
+                {{ t("edit_announcement") }}
               </button>
             </div>
           </template>
